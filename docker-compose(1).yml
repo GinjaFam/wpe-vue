@@ -1,0 +1,37 @@
+# this whole thing comes from https://blog.pamelafox.org/2022/11/running-postgresql-in-devcontainer-with.html
+
+version: "3"
+
+#Here i declare the services i need, which are my flask webapp and a db with postgres
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: 3.9
+        USER_UID: 1000
+        USER_GID: 1000
+
+    volumes:
+      - ..:/workspace:cached
+
+    # Overrides default so things don't shut down after the process ends
+    command: sleep infinity
+
+    # Runs app on the same network as the database container,
+    # allows "forwardPorts" in devcontainer.json function
+    network_mode: service:db
+
+  db:
+    image: postgis/postgis:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: app_password
+
+volumes:
+  postgres-data:

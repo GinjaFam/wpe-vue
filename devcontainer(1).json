@@ -1,0 +1,45 @@
+// devcontainer.json, which is the entry point for Github Codespaces and the VS Code Dev Containers extension, 
+// and describes all the customizations. Here's a simplified version of mine
+
+{
+    //name of the dev environment
+    "name": "Flask and PostgreSQL",
+    // Points at the docker compose yml
+    "dockerComposeFile": "docker-compose.yml",
+    //service matches the name of the non-postgres service from that file.
+    "service": "app",
+    // workspaceFolder matches the location of the volume from that file.
+    "workspaceFolder": "/workspace",
+    //forwardPorts instructs the Dev Container to expose port 5000 (for the Flask app) and port 5432 (for the PostGres DB).
+    "forwardPorts": [5000, 5432],
+    //extensions includes a really neat extension, SQLTools, which provides a graphical UI for the database tables and allows you to run queries against the tables.
+    "extensions": [
+        "ms-python.python",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg"
+    ],
+    //Inside settings, sqltools.connections specifies the same database name, username, and password that was declared in the docker-compose.yml.
+    "settings": {
+        "sqltools.connections": [{
+            "name": "Container database",
+            "driver": "PostgreSQL",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "database": "app",
+            "username": "app_user",
+            "password": "app_password"
+        }],
+        "python.pythonPath": "/usr/local/bin/python"
+    },
+
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [
+		5000, 5432
+	],
+    // Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "",
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+    "remoteUser": "vscode"
+
+}
