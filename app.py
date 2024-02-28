@@ -47,10 +47,12 @@ import json
 
 # Initialize Flask app
 app = Flask(__name__)
+# enable CORS
+CORS(app, resources={r'/*': {'origins': 'https://verbose-invention-965wj5xpvjxfp4-5000.app.github.dev/'}})
+
 # Load the configuration from the config.py file --> in this case is the development configuration
 app.config.from_object(DevelopmentConfig)
 # db = SQLAlchemy(app) # Initialize SQLAlchemy database object
-
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -72,7 +74,7 @@ def create_random_hrus_command():
 
 logging.basicConfig(level=logging.INFO)
 
-CORS(app)
+
 bcrypt = Bcrypt(app)
 
 # Flask Login stuff
@@ -178,7 +180,7 @@ class LulcForm(FlaskForm):
 # sanity check route
 @app.route('/ping', methods=['GET'])
 def ping_pong():
-    return jsonify('pong!')
+    return jsonify('pexxo di merda!')
 
     
 @app.route('/', methods=['GET','POST'])
