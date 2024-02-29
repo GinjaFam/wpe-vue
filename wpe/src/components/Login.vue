@@ -24,6 +24,8 @@
 </template>
 
 <script>
+    import { userAuthStore } from '@/stores/auth';
+
     export default {    
         name: 'Login',
         data() {
@@ -50,16 +52,26 @@
                 })
                 .then(response => { 
                     if (response.ok) {
-                        return response.json();
+                        if (response.headers.get("Content-Length") === "0") {
+                            throw new Error("Empty response from server");
+                        }
+                        return  response.json();
                     } else {
-                        throw response.json();
+                        throw new Error('Server responded with an error');
                     }
                 })
                 .then(data => {
                     if (data.success) {
                         alert(data.success);
+                        this.closeModal();
+                        const authStore = userAuthStore();
+                        authStore.logUserIn(data.mail);
+                        console.log(data.mail);
+                        console.log(authStore.mailUser);
                     }
-                    this.closeModal();
+                    
+                    // PRINT THE EMAIL
+                    
                 })
                 .catch(async (errorPromise) => {
                     const errorData = await errorPromise;
@@ -77,6 +89,12 @@
             closeModal() {
                 this.showModal = false;
                 this.initForm();
+            },
+            displayMail() {
+                const authStore = userAuthStore();
+                // expect to see the email in the console
+                alert(authStore.getUserEmail);
+                console.log(authStore.getUserEmail);
             }
         } 
     }
