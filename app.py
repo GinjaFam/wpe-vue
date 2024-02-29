@@ -236,22 +236,40 @@ def register():
         response_object['message'] = 'Invalid request'
     # ...
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    log_form = LoginForm()
-    reg_form = RegistrationForm()
-
-    if log_form.validate_on_submit():
-        user = User.query.filter_by(email=log_form.email.data).first()
-        if user and bcrypt.check_password_hash(user.pwd, log_form.password.data):
-            # If the user exists and the password is correct, log the user in with the login_user function from Flask Login
-            login_user(user)
-            flash('You have been logged in!', 'success')
-            print(f"LOGGED IN as: {current_user.email} ")
-            return render_template('index.html', log_form=log_form, reg_form=reg_form)
+    # create a response object
+    response_object = {
+        'status': 'success'
+    }
+    if request.method == 'POST':
+        # get the data from the request
+        post_data = request.get_json()
+        print(f"login:-------> the data is: {post_data}")
+        # get the user from the database
+        user = User.query.filter_by(email=post_data['email']).first()
+        # check if the user exists and the password is correct
+        if user and bcrypt.check_password_hash(user.pwd, post_data['password']):
+            # log the user in
+            login_user(user) # This is a function from Flask Login
+            response_object['message'] = 'User logged in successfully'
+            return jsonify(response_object)
         else:
-            flash('Login unsuccessful. Please check email and password', 'danger')
-    return render_template('index.html', log_form=log_form, reg_form=reg_form )
+            response_object['message'] = 'Invalid email or password'
+            return jsonify(response_object)
+
+   
+    # if log_form.validate_on_submit():
+    #     user = User.query.filter_by(email=log_form.email.data).first()
+    #     if user and bcrypt.check_password_hash(user.pwd, log_form.password.data):
+    #         # If the user exists and the password is correct, log the user in with the login_user function from Flask Login
+    #         login_user(user)
+    #         flash('You have been logged in!', 'success')
+    #         print(f"LOGGED IN as: {current_user.email} ")
+    #         return render_template('index.html', log_form=log_form, reg_form=reg_form)
+    #     else:
+    #         flash('Login unsuccessful. Please check email and password', 'danger')
+    # return render_template('index.html', log_form=log_form, reg_form=reg_form )
 
 @app.route('/logout', methods=['POST'])
 def logout():
