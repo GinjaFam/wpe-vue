@@ -173,23 +173,17 @@ class LulcForm(FlaskForm):
             ('gravel roads','Gravel roads')
         ]
     )
-
     submit = SubmitField('Save LULC unit')
 
 
-# sanity check route
-@app.route('/ping', methods=['GET'])
-def ping_pong():
-    return jsonify('pexxo di merda!')
 
-    
-@app.route('/', methods=['GET','POST'])
-def index():
+# @app.route('/', methods=['GET','POST'])
+# def index():
 
-    reg_form = RegistrationForm()
-    log_form = LoginForm()
+#     reg_form = RegistrationForm()
+#     log_form = LoginForm()
     
-    return render_template('index.html', log_form=log_form, reg_form=reg_form)
+#     return render_template('index.html', log_form=log_form, reg_form=reg_form)
 
 @app.route('/sidebar')
 def sidebar():
@@ -253,36 +247,25 @@ def login():
             # log the user in
             login_user(user) # This is a function from Flask Login
             response_object['message'] = 'User logged in successfully'
+            response_object['mail'] =  user.email
             return jsonify(response_object)
         else:
             response_object['message'] = 'Invalid email or password'
             return jsonify(response_object)
 
    
-    # if log_form.validate_on_submit():
-    #     user = User.query.filter_by(email=log_form.email.data).first()
-    #     if user and bcrypt.check_password_hash(user.pwd, log_form.password.data):
-    #         # If the user exists and the password is correct, log the user in with the login_user function from Flask Login
-    #         login_user(user)
-    #         flash('You have been logged in!', 'success')
-    #         print(f"LOGGED IN as: {current_user.email} ")
-    #         return render_template('index.html', log_form=log_form, reg_form=reg_form)
-    #     else:
-    #         flash('Login unsuccessful. Please check email and password', 'danger')
-    # return render_template('index.html', log_form=log_form, reg_form=reg_form )
-
 @app.route('/logout', methods=['POST'])
 def logout():
-    logout_user()
+    response_object = {
+        'status': 'success'
+    }
+    logout_user() # This is a function from Flask Login
     session.clear()
-    return redirect(url_for('index'))
+    print(f"logout:-------> the session was cleared")
+    response_object['message'] = 'User logged out successfully'
+    return jsonify(response_object)
 
-
-# @app.route('/watershed', methods=['GET'])
-# def watershed():
-    
-#     return render_template('snippets/watershed.html', wsd = wsd)
-
+   
 # in this route the user can load the watersheds that are already saved in the db
 @app.route('/ws_load', methods=['GET','POST'])
 def ws_load():
