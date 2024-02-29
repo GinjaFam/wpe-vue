@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Signup</h5>
-                    <button type="button" @click="toggleModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Register</button>
+                    <button type="button" @click="toggleModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
@@ -92,6 +92,7 @@ export default {
                 if (data.success) {
                     alert(data.success);
                 }
+                this.closeModal();
             })
             .catch(async (errorPromise) => {
                 const errorData = await errorPromise;
@@ -102,9 +103,22 @@ export default {
                 }
             });
         },
-        toggleModal() {
-            this.showModal = !this.showModal;
+        initForm() {
+            this.user.name = '';
+            this.user.last_name = '';
+            this.user.username = '';
+            this.user.organization = '';
+            this.user.email = '';
+            this.user.country = '';
+            this.user.language = '';
+            this.user.password = '';
+            this.user.confirm_password = '';
+            this.user.newsletter = false;
         },
+        closeModal() {
+            this.showModal = false; // Close the modal
+            this.initForm(); // Clear the form
+        }
     }
 }
 </script>

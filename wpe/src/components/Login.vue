@@ -1,31 +1,47 @@
 <template>
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div v-if="showModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" @click="toggleModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Login</button>
                 </div>
+
                 <div class="modal-body">
-                    <!-- Login form here -->
-                    <!-- <form id="login-form" action="/login" method="POST" autocomplete="off">
-                        
-                        
-                        <input type="hidden" name="form_type" value="login">
-            
-                        {{log_form.hidden_tag()}}
-            
-                        {{log_form.email.label(class='form-label')}}
-                        {{log_form.email(class='form-control')}}
-            
-                        {{log_form.password.label(class='form-label')}}
-                        {{log_form.password(class='form-control')}}
-                        
-                        <br/>
-                        
-                        {{log_form.submit(class='btn-light')}} -->
-            
-                    <!-- </form> -->
+                    <form @submit.prevent="submitForm" action="/register" method="POST" autocomplete="off">
+                        <div class="mb-3">
+                            <input v-model="user.name" placeholder="Name" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.last_name" placeholder="Last Name" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.username" placeholder="Username" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.organization" placeholder="Organization" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.email" placeholder="Email" type="email" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.country" placeholder="Country" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.language" placeholder="Language" type="text" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.password" placeholder="Password" type="password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input v-model="user.confirm_password" placeholder="Confirm Password" type="password" class="form-control">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input v-model="user.newsletter" type="checkbox" class="form-check-input">
+                            <label class="form-check-label">Subscribe to newsletter</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -34,6 +50,14 @@
 
 <script>
     export default {
-        name: 'Login'
+        name: 'Login',
+        data() {
+            return {
+                showModal: false,
+                userLogginIn: {
+                    email: '',
+                    password: ''
+                }
+        }
     }
 </script>
