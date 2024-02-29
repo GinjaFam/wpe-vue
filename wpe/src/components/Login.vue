@@ -34,7 +34,51 @@
                     password: ''
                 }
             }
-        }
+        },
+        methods: {
+            toggleModal() {
+                this.showModal = !this.showModal;
+            },
+            submitForm() {
+                fetch('api/login', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(this.userLogginIn)
+                })
+                .then(response => { 
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw response.json();
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert(data.success);
+                    }
+                    this.closeModal();
+                })
+                .catch(async (errorPromise) => {
+                    const errorData = await errorPromise;
+                    if (errorData.errors) {
+                        this.errors = errorData.errors;
+                    } else if (errorData.error) {
+                        alert(errorData.error);
+                    }
+                });
+            },
+            initForm() {
+                this.userLogginIn.email = '';
+                this.userLogginIn.password = '';
+            },
+            closeModal() {
+                this.showModal = false;
+                this.initForm();
+            }
+        } 
     }
 
 </script>
