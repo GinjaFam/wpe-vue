@@ -40,7 +40,7 @@
                 this.showModal = !this.showModal;
             },
             submitForm() {
-                fetch('api/login', {
+                fetch('/api/login', {
                     method: 'post',
                     headers: {
                         'Content-Type': 'application/json',
