@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Ping from '../components/Ping.vue'
-import Books from '../components/Books.vue'
-import Map from '../components/Map.vue'
+import MainMap from '../components/Map.vue'
+import Home from '../components/Home.vue'
+import Auth from '../components/Auth.vue'
+import Navigation from '../components/Navigation.vue'
+import Register from '../components/Register.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,14 +16,28 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'Books',
-      component: Books
-    }
-    ,
+      name: 'Home',
+      component: Home
+    },
     {
       path: '/map',
       name: 'Map',
-      component: Map
+      component: MainMap
+    },
+    {
+      path: '/auth',
+      name: 'Auth',
+      component: Auth
+    },
+    {
+      path: '/navigation',
+      name: 'Navigation',
+      component: Navigation
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
     }
   ]
 })

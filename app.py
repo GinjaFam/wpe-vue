@@ -197,39 +197,44 @@ def sidebar():
     log_form = LoginForm()
     return render_template('snippets/sidebar.html', reg_form=reg_form, log_form=log_form)
 
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['POST'])
 def register():
-    reg_form = RegistrationForm()
-    log_form = LoginForm()
-    try: 
-        hashed_password = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8') # decode is needed to convert the hashed password to a string
-        user = User(email=reg_form.email.data, # Create an instance of the class User with attributes from the form
-                    pwd=hashed_password, 
-                    username = reg_form.username.data
-                    )
-        db.session.add(user) # Add the instance to the database
-        db.session.commit() # Commit the changes to the database
+    # create a response object
+    response_object = {
+        'status': 'success'
+    }
+    if request.method == 'POST':
+        # get the data from the request
+        post_data = request.get_json()
+        print(f"register:-------> the data is: {post_data}")
+        # create a new user
+        new_user = User(
+            username=post_data['username'], 
+            email=post_data['email'], 
+            pwd=bcrypt.generate_password_hash(post_data['password']).decode('utf-8')
+        )
+        db.session.add(new_user)
+        db.session.commit()  # Commit the changes to the database to generate the user_id
 
-        user_data = UserData(user_id=user.id, # Create an instance of the class UserData with attributes from the form
-                            name=reg_form.name.data,
-                            last_name=reg_form.last_name.data,
-                            organization=reg_form.organization.data,
-                            country=reg_form.country.data,
-                            lang=reg_form.language.data,
-                            news=reg_form.newsletter.data,
-                            datereg=datetime.now() # datetime.now() is a function that returns the current date and time
-                            )
-        
-        db.session.add(user_data) 
+        new_user_data = UserData(
+            user_id=new_user.id,  # Assign the user_id from the newly created user
+            name=post_data['name'],
+            last_name=post_data['last_name'],
+            organization=post_data['organization'],
+            country=post_data['country'],
+            lang=post_data['language'],
+            news=post_data['newsletter'],
+            datereg=datetime.now()
+        )
+        # add the user data to the database
+        db.session.add(new_user_data)
         db.session.commit()
-        flash('Your account has been created! You are now able to log in.', 'success') # Flash a message to the user
-
-        return render_template('index.html', reg_form=reg_form, log_form=log_form)
-
-    except Exception as e: # If something goes wrong, print the error and flash a message to the user
-        print(f"An error occurred: {e}")
-        flash('An error occurred. Please try again.', 'danger')
-        return render_template('index.html', reg_form=reg_form, log_form=log_form)
+        # set the response message
+        response_object['message'] = 'User created successfully'
+        return jsonify(response_object)
+    else:
+        response_object['message'] = 'Invalid request'
+    # ...
 
 @app.route('/login', methods=['GET','POST'])
 def login():
