@@ -1,4 +1,5 @@
 <template>
+    
     <div v-if="showModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -15,28 +16,37 @@
                         <div class="mb-3">
                             <input v-model="userLogginIn.password" placeholder="Password" type="password" class="form-control">
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" @click="loginUser()" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <div>User Email: {{ mailUser }}</div>
 </template>
 
 <script>
     import { userAuthStore } from '@/stores/auth';
+    import { defineComponent, watch } from 'vue';
 
-    export default {    
+    export default defineComponent({    
         name: 'Login',
+        computed: {
+            // Expose the store and its state as a computed property - then i can use it in the DOM
+            mailUser() {
+                return userAuthStore().mailUser;
+            }
+        },
         data() {
             return {
-                showModal: false,
+                showModal: false, // Ensure this is defined
                 userLogginIn: {
                     email: '',
                     password: ''
                 }
-            }
+            };
         },
+
         methods: {
             toggleModal() {
                 this.showModal = !this.showModal;
@@ -61,26 +71,24 @@
                     }
                 })
                 .then(data => {
-                    if (data.success) {
-                        alert(data.success);
+                    console.log("Server response:", data);
+                    if (data.success = 'success' ) {
+                        alert(data.message);
                         this.closeModal();
-                        const authStore = userAuthStore();
-                        authStore.logUserIn(data.mail);
-                        console.log(data.mail);
-                        console.log(authStore.mailUser);
+                        console.log("Logged in user email from server:",data.mail);
+                    } else {
+                        alert(data.message);
                     }
-                    
-                    // PRINT THE EMAIL
-                    
                 })
-                .catch(async (errorPromise) => {
-                    const errorData = await errorPromise;
-                    if (errorData.errors) {
-                        this.errors = errorData.errors;
-                    } else if (errorData.error) {
-                        alert(errorData.error);
-                    }
+                .catch(error => {
+                    console.error('Login error:', error.message);
+                    alert(error.message); // Show error message
                 });
+            },
+            loginUser() {
+                const email = this.userLogginIn.email;
+                const authStore = userAuthStore();
+                authStore.logUserIn(email);
             },
             initForm() {
                 this.userLogginIn.email = '';
@@ -90,13 +98,7 @@
                 this.showModal = false;
                 this.initForm();
             },
-            displayMail() {
-                const authStore = userAuthStore();
-                // expect to see the email in the console
-                alert(authStore.getUserEmail);
-                console.log(authStore.getUserEmail);
-            }
-        } 
-    }
+        }, 
+    });
 
 </script>
