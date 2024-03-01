@@ -31,7 +31,7 @@
                 // Define basemap layers for the switcher
                 const basemapLayers = [
                 {
-                    layer: L.tileLayer.provider('OpenTopoMap').addTo(map), // Set as default map
+                    layer: L.tileLayer.provider('OpenTopoMap'), // Set as default map
                     icon: '/../assets/images/img1.PNG',
                     name: 'OpenTopo'
                 },
@@ -41,7 +41,7 @@
                     name: 'USGS'
                 },
                 {
-                    layer: L.tileLayer.provider('Esri.WorldImagery'),
+                    layer: L.tileLayer.provider('Esri.WorldImagery').addTo(map),
                     icon: '/assets/static/images/img3.PNG',
                     name: 'ESRI satellite'
                 }
