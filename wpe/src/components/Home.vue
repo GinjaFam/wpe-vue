@@ -50,7 +50,10 @@ import Navigation from './Navigation.vue';
         top: 0; 
         margin-right: 15px; 
         overflow: auto; 
-        background-color: rgba(255,255,0,0); 
+        background-color: rgba(229, 239, 245, 0.5);
+        margin-top: 15px;
+        padding-bottom: 15px;
+        border-radius: 4px;
     } 
 
     #title {
