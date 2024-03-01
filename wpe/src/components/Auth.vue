@@ -1,11 +1,14 @@
 <template>
     <div id="user_auth">
-        <button type="button" @click="openLoginModal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-        <Registration ref="registrationComponent" />
-        <button type="button" @click="openRegistrationModal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signupModal">Register</button>
-        <Login ref="loginComponent" />
-        <button type="button" @click="logOut" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
+        <button type="button" @click="openLoginModal" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+        
+        <button type="button" @click="openRegistrationModal" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#signupModal">Register</button>
+        
+        <button type="button" @click="logOut" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
     </div>
+    <Login ref="loginComponent" />
+    <Registration ref="registrationComponent" />
+    <div>User Email: {{ mailUser }}</div>
 </template>
 
 <script>
@@ -16,6 +19,12 @@ import { userAuthStore } from '@/stores/auth';
 
 export default {
     name: 'Auth',
+    computed: {
+            // Expose the store and its state as a computed property - then i can use it in the DOM
+            mailUser() {
+                return userAuthStore().mailUser;
+            }
+        },
     components: {
         Registration,
         Login
@@ -23,11 +32,20 @@ export default {
     methods: {
         openRegistrationModal() {
             this.$refs.registrationComponent.showModal = true;
+            // close the login modal
+            this.$refs.loginComponent.showModal = false;
+
         },
         openLoginModal() {
             this.$refs.loginComponent.showModal = true;
+            // close the registration modal
+            this.$refs.registrationComponent.showModal = false;
         },
         logOut () {
+            // close the registration modal
+            this.$refs.registrationComponent.showModal = false;
+            this.$refs.loginComponent.showModal = false;
+            
             fetch('/api/logout', {
                 method: 'post',
                 headers: {
@@ -58,3 +76,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.btn {
+    margin: 1px;
+}
+</style>
