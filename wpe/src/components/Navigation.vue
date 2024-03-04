@@ -1,13 +1,10 @@
 <template>
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">  
-        <!-- Can do double attribute - see hx-trigger -->
-        <input 
-            hx-get="/ws_load"
-            hx-target="#wsIsland"
-            hx-swap="innerHTML"
-            hx-trigger="load, change"  
+    <div v-if="isLoggedIn" class="btn-group" role="group" aria-label="Basic radio toggle button group">  
+        <input
+            v-model="selectedStage"
 
-            type="radio" 
+            type="radio"
+            value="watershed-stage" 
             class="btn-check to-clean-map" 
             name="btnradio" 
             id="wsBtn" 
@@ -16,11 +13,10 @@
         <label class="btn btn-outline-primary" for="wsBtn">Wathersheds</label>
 
         <input 
-            hx-get="/z_load"
-            hx-target="#wsIsland"
-            hx-swap="innerHTML"
+            v-model="selectedStage"    
 
             type="radio" 
+            value="zone-stage"
             class="btn-check to-clean-map" 
             name="btnradio" 
             id="znBtn" 
@@ -28,11 +24,10 @@
         <label class="btn btn-outline-primary" for="znBtn">Zones</label>
         
         <input  
-            hx-get="/l_load"
-            hx-target="#wsIsland"
-            hx-swap="innerHTML"
+            v-model="selectedStage"
 
             type="radio"
+            value="lulc-stage"
             class="btn-check to-clean-map" 
             name="btnradio" 
             id="lulcBtn" 
@@ -40,21 +35,47 @@
         <label class="btn btn-outline-primary" for="lulcBtn">LULC</label>
 
         <input 
-            hx-get="/h_load"
-            hx-target="#wsIsland"
-            hx-swap="innerHTML"
+            v-model="selectedStage"
 
             type="radio" 
+            value="hru-stage"
             class="btn-check to-clean-map" 
             name="btnradio" 
             id="hruBtn" 
             autocomplete="off">
         <label class="btn btn-outline-primary" for="hruBtn">HRUs</label>
     </div>
+
 </template>
 
 <script>
+import { computed } from 'vue';
+import { userAuthStore } from '@/stores/auth';
+import { drawStage } from '@/stores/stage';
+
     export default {
-        name: 'Navigation'
-    }
+        
+        name: 'Navigation',
+        data() {
+            return {
+                selectedStage: 'watershed-stage'
+            };
+        },
+        computed: {
+            // Expose the store and its state as a computed property - then i can use it in the DOM
+            isLoggedIn() {
+                return userAuthStore().mailUser;
+            },
+        },
+        watch: {
+            // Watcher to react whenever the selected stage changes
+            selectedStage(newStage) {
+            const stageStore  = drawStage();
+            stageStore.registerStage(newStage);
+            // Here you can also call methods or perform actions based on the newStage
+            // For example, updating a store or triggering side effects
+            }
+        }
+    };
+
 </script>
