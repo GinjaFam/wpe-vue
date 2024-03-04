@@ -68,12 +68,12 @@ import { drawStage } from '@/stores/stage';
             },
         },
         watch: {
-            // Watcher to react whenever the selected stage changes
+            // Watcher to react whenever the selected radio-button changes
             selectedStage(newStage) {
             const stageStore  = drawStage();
+            // Then register the stage 
             stageStore.registerStage(newStage);
-            // Here you can also call methods or perform actions based on the newStage
-            // For example, updating a store or triggering side effects
+            
             }
         }
     };
