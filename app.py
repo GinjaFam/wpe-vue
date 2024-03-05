@@ -1,5 +1,6 @@
 from flask import Flask, render_template, g, request, redirect, url_for, flash, jsonify
 from flask import session
+from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_bcrypt import Bcrypt, generate_password_hash
@@ -53,6 +54,8 @@ CORS(app, resources={r'/*': {'origins': 'https://verbose-invention-965wj5xpvjxfp
 # Load the configuration from the config.py file --> in this case is the development configuration
 app.config.from_object(DevelopmentConfig)
 # db = SQLAlchemy(app) # Initialize SQLAlchemy database object
+jwt = JWTManager(app)
+
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -267,70 +270,61 @@ def logout():
 
    
 # in this route the user can load the watersheds that are already saved in the db
-@app.route('/ws_load', methods=['GET','POST'])
+@app.route('/ws_load', methods=['POST'])
 def ws_load():
-    ''' 
-    Get the existing watersheds from the database for the logged in user and create a geojson. 
-    If the user clicks on the load button, the watershed id is loaded in the session and a message is flashed to the user. 
-    If the user clicks on the remove button, the watershed is removed from the database.
-
-    It expects a GET request when the page is loaded and a POST request when the user clicks on the load button.
-
-    '''
-    print(f'ws_load:------------------->hello route')
-    stmt = select(Watershed).where(Watershed.user_id == current_user.id)
-    watershedsUser = db.session.execute(stmt)
-    print(watershedsUser)
-    #Create an empty list where to append the watersheds with the for loop
+    response_object = {
+        'status': 'success'
+    }
     wsd = []
-    print(f'ws_load:-------------------> the watersheds are: {wsd}')
-
-    # Loop through the query results and append the watersheds to the list
-    # TODO: the block below could be abstracted away with a function
-    # if wsd is empty, return a message to the user
-    if not watershedsUser:
-        pass
-        # flash("No Watershed Found")
-        # return "No Watershed Found", 404
+    
+    # if user is not logged in, return a message
+    if not current_user.is_authenticated:
+        response_object['message'] = 'User not logged in'
+        return jsonify(response_object)
     else:
-        for row in watershedsUser:
-            watershed = row.Watershed
-            # Convert the geom attribute to a Shapely geometry
-            shapely_geom = to_shape(watershed.w_boundary)
-            # Convert the Shapely geometry to GeoJSON
-            geojson_geom = json.dumps(mapping(shapely_geom))            
-            area = None
-            if isinstance(watershed.area, float):
-                area = round(watershed.area, 2)
+        stmt = select(Watershed).where(Watershed.user_id == current_user.id)
+        watershedsUser = db.session.execute(stmt)
+        print(f"the user from db is: ------------> {watershedsUser}")
 
-            wsd.append({
-                "id": watershed.id,
-                "user_id": watershed.user_id,
-                "name": watershed.name,
-                "geojson": geojson_geom,
-                "area": area,
-                })
+        if watershedsUser is None:
+            response_object['message'] = 'No Watershed Found'
+            return jsonify(response_object)
+           
+        else:
+            for row in watershedsUser:
+                watershed = row.Watershed
+                # Convert the geom attribute to a Shapely geometry
+                shapely_geom = to_shape(watershed.w_boundary)
+                # Convert the Shapely geometry to GeoJSON
+                geojson_geom = json.dumps(mapping(shapely_geom))            
+                area = None
+                if isinstance(watershed.area, float):
+                    area = round(watershed.area, 2)
+
+                wsd.append({
+                    "id": watershed.id,
+                    "user_id": watershed.user_id,
+                    "name": watershed.name,
+                    "geojson": geojson_geom,
+                    "area": area,
+                    })
+            response_object['message'] = 'Watershed loaded successfully'
+            response_object['wsd'] = wsd
         
-    # if the request method is GET  
-    if request.method == 'GET' and 'HX-Request' in request.headers:
-        print("HTMX Request Received", request.headers.get('HX-Trigger'))
-        trigger = request.headers.get('HX-Trigger', None)
-        if trigger == 'wsLoad':
-            return render_template('snippets/ws_load.html',wsd=wsd)
-    
-    elif request.method == 'POST' and request.form['status'] == 'loaded':
-            # save to a variable the watershed from the post request
-            watershed_id = request.form['watershed_id']
-            # store the loaded watershed in a variable
-            wsd = Watershed.query.filter_by(id=watershed_id).first()            
-            # save to the session the watershed id
-            session['watershed_id'] = watershed_id
-            flash('Watershed loaded successfully! Proceed to Zone delineation', 'success')
-            return render_template('snippets/ws_loaded.html', wsd=wsd) #render_template('snippets/ws_load_success.html')
-    
-    
-    return render_template('snippets/ws_load.html',wsd=wsd)
+            return jsonify(response_object)
+        
 
+    # if request.method == 'POST' and request.form['status'] == 'loaded':
+    #         # save to a variable the watershed from the post request
+    #         watershed_id = request.form['watershed_id']
+    #         # store the loaded watershed in a variable
+    #         wsd = Watershed.query.filter_by(id=watershed_id).first()            
+    #         # save to the session the watershed id
+    #         session['watershed_id'] = watershed_id
+    #         flash('Watershed loaded successfully! Proceed to Zone delineation', 'success')
+    #         return render_template('snippets/ws_loaded.html', wsd=wsd) #render_template('snippets/ws_load_success.html')
+    
+    
 @app.route('/ws_remove', methods=['POST'])
 def ws_remove():
     '''
