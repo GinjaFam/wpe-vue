@@ -5,7 +5,8 @@ import { defineStore } from 'pinia';
 export const drawStage = defineStore("stage", {
     // The state of the store
     state: () => ({ 
-        stageVar: null
+        stageVar: null,
+        drawCtrl: false
     }),
     // The actions of the store
     actions: {
@@ -20,6 +21,14 @@ export const drawStage = defineStore("stage", {
         clearStage() {
             this.stageVar = null;
             console.log('Stage cleared in store');
+        },
+        activateDrawCtrl() {
+            this.drawCtrl = true;
+            console.log('Draw controls: ',this.drawCtrl);
+        },
+        deactivateDrawCtrl() {
+            this.drawCtrl = false;
+            console.log('Draw controls: ',this.drawCtrl);
         }
     }
 });

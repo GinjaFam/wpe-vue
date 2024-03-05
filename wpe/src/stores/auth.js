@@ -15,7 +15,7 @@ export const userAuthStore = defineStore("auth", {
             // Set the user data and the logged in status
             this.isLoggedIn = true;
             this.mailUser = userData;
-            console.log('The logged in user is', this.mailUser);
+            console.log('The logged in user un store is', this.mailUser);
         },
         logUserOut() {
             this.isLoggedIn = false;

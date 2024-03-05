@@ -324,6 +324,25 @@ files = [
 Flask = ">=0.9"
 
 [[package]]
+name = "flask-debugtoolbar"
+version = "0.14.1"
+description = "A toolbar overlay for debugging Flask applications."
+optional = false
+python-versions = ">=2.7"
+files = [
+    {file = "Flask-DebugToolbar-0.14.1.tar.gz", hash = "sha256:ccd6a72119ea4f7c486823591b2b2f4a14dc7fb38d6bd495272e0ebdc08724cd"},
+    {file = "Flask_DebugToolbar-0.14.1-py3-none-any.whl", hash = "sha256:3b938b02c418ac86fc18431f484dcd459f24acf3d0c1e72131c06413863bcf04"},
+]
+
+[package.dependencies]
+Blinker = "*"
+Flask = ">=0.8"
+itsdangerous = "*"
+MarkupSafe = "*"
+packaging = "*"
+werkzeug = "*"
+
+[[package]]
 name = "flask-httpauth"
 version = "4.8.0"
 description = "HTTP authentication for Flask routes"
@@ -336,6 +355,25 @@ files = [
 
 [package.dependencies]
 flask = "*"
+
+[[package]]
+name = "flask-jwt-extended"
+version = "4.6.0"
+description = "Extended JWT integration with Flask"
+optional = false
+python-versions = ">=3.7,<4"
+files = [
+    {file = "Flask-JWT-Extended-4.6.0.tar.gz", hash = "sha256:9215d05a9413d3855764bcd67035e75819d23af2fafb6b55197eb5a3313fdfb2"},
+    {file = "Flask_JWT_Extended-4.6.0-py2.py3-none-any.whl", hash = "sha256:63a28fc9731bcc6c4b8815b6f954b5904caa534fc2ae9b93b1d3ef12930dca95"},
+]
+
+[package.dependencies]
+Flask = ">=2.0,<4.0"
+PyJWT = ">=2.0,<3.0"
+Werkzeug = ">=0.14"
+
+[package.extras]
+asymmetric-crypto = ["cryptography (>=3.3.1)"]
 
 [[package]]
 name = "flask-login"
@@ -833,6 +871,23 @@ files = [
     {file = "pycountry-23.12.11-py3-none-any.whl", hash = "sha256:2ff91cff4f40ff61086e773d61e72005fe95de4a57bfc765509db05695dc50ab"},
     {file = "pycountry-23.12.11.tar.gz", hash = "sha256:00569d82eaefbc6a490a311bfa84a9c571cff9ddbf8b0a4f4e7b4f868b4ad925"},
 ]
+
+[[package]]
+name = "pyjwt"
+version = "2.8.0"
+description = "JSON Web Token implementation in Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "PyJWT-2.8.0-py3-none-any.whl", hash = "sha256:59127c392cc44c2da5bb3192169a91f429924e17aff6534d70fdc02ab3e04320"},
+    {file = "PyJWT-2.8.0.tar.gz", hash = "sha256:57e28d156e3d5c10088e0c68abb90bfac3df82b40a71bd0daa20c65ccd5c23de"},
+]
+
+[package.extras]
+crypto = ["cryptography (>=3.4.0)"]
+dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.4.0)", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
+docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
+tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pyparsing"
@@ -1369,4 +1424,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "da45151d6ffcafe42e46e07983cbcb6da972dcbf1b2e761e2369f9189ee9c418"
+content-hash = "b02dc18ffc80e87beea068d0971470f703d27eaf41a660717b4048267934250d"

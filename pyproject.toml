@@ -28,6 +28,8 @@ flask-migrate = "^4.0.5"
 shapely = "^2.0.2"
 flask-cors = "^4.0.0"
 flask-profiler = "^1.8.1"
+flask-debugtoolbar = "^0.14.1"
+flask-jwt-extended = "^4.6.0"
 
 
 

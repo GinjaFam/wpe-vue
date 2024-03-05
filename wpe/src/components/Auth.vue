@@ -1,10 +1,10 @@
 <template>
     <div id="user_auth">
-        <button type="button" @click="openLoginModal" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+        <button type="button" @click="openLoginModal" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
         
-        <button type="button" @click="openRegistrationModal" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#signupModal">Register</button>
+        <button type="button" @click="openRegistrationModal" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#signupModal">Register</button>
         
-        <button type="button" @click="logOut" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
+        <button type="button" @click="logOut" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
     </div>
     <Login ref="loginComponent" />
     <Registration ref="registrationComponent" />

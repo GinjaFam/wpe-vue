@@ -66,8 +66,8 @@ export const mapStore = defineStore("mapGloStore", {
                 console.log('The loaded watershed is: ',this.loadedWatershed);
                 return data;
             })
-            .catch(error => console.error('Error loading watershed:', error)); // Handle any errors.
-            throw error; 
+            .catch((error) => console.error('Error loading watershed:', error)); // Handle any errors.
+            
         },
     }
 });

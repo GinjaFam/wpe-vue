@@ -16,6 +16,7 @@
                             </div>
                             <Auth/>
                             <Navigation/>
+                            <Explorer/>
                         </div> 
                     </div>
                 </div>  
@@ -30,6 +31,7 @@
 import MainMap from './Map.vue';
 import Auth from './Auth.vue';
 import Navigation from './Navigation.vue';
+import Explorer from './Explorer.vue';
 
     export default {
         name: 'Home',
@@ -37,6 +39,7 @@ import Navigation from './Navigation.vue';
             MainMap, //: () => import('./Map.vue'),
             Auth, //: () => import('./Auth.vue'),
             Navigation, //: () => import('./Navigation.vue')
+            Explorer, //: () => import('./Explorer.vue')
         }
     }
 </script>

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, g, request, redirect, url_for, flash, jsonify
 from flask import session
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_bcrypt import Bcrypt, generate_password_hash
@@ -49,7 +49,10 @@ import json
 # Initialize Flask app
 app = Flask(__name__)
 # enable CORS
-CORS(app, resources={r'/*': {'origins': 'https://verbose-invention-965wj5xpvjxfp4-5000.app.github.dev/'}})
+CORS(app, 
+    resources={r'/*': {'origins': 'https://verbose-invention-965wj5xpvjxfp4-5000.app.github.dev/'}},
+    supports_credentials=True
+    )
 
 # Load the configuration from the config.py file --> in this case is the development configuration
 app.config.from_object(DevelopmentConfig)
@@ -180,19 +183,6 @@ class LulcForm(FlaskForm):
 
 
 
-# @app.route('/', methods=['GET','POST'])
-# def index():
-
-#     reg_form = RegistrationForm()
-#     log_form = LoginForm()
-    
-#     return render_template('index.html', log_form=log_form, reg_form=reg_form)
-
-@app.route('/sidebar')
-def sidebar():
-    reg_form = RegistrationForm()
-    log_form = LoginForm()
-    return render_template('snippets/sidebar.html', reg_form=reg_form, log_form=log_form)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -248,13 +238,14 @@ def login():
         # check if the user exists and the password is correct
         if user and bcrypt.check_password_hash(user.pwd, post_data['password']):
             # log the user in
-            login_user(user) # This is a function from Flask Login
+            access_token = create_access_token(identity=post_data['email'])
             response_object['message'] = 'User logged in successfully'
             response_object['mail'] =  user.email
-            return jsonify(response_object)
+            response_object['access_token'] = access_token
+            return jsonify(response_object), 200
         else:
             response_object['message'] = 'Invalid email or password'
-            return jsonify(response_object)
+            return jsonify(response_object), 401
 
    
 @app.route('/logout', methods=['POST'])
@@ -271,47 +262,48 @@ def logout():
    
 # in this route the user can load the watersheds that are already saved in the db
 @app.route('/ws_load', methods=['POST'])
+@jwt_required()
 def ws_load():
+    auth_header = request.headers.get('Authorization', None)
+    print(f"Authorization Header: {auth_header}")
+    print(f"ws_load:-------> tprotected route entered")
     response_object = {
         'status': 'success'
     }
     wsd = []
+    current_user = get_jwt_identity()
     
-    # if user is not logged in, return a message
-    if not current_user.is_authenticated:
-        response_object['message'] = 'User not logged in'
+    stmt = select(Watershed).where(Watershed.user_id == current_user.id)
+    watershedsUser = db.session.execute(stmt)
+    print(f"the user from db is: ------------> {watershedsUser}")
+
+    if watershedsUser is None:
+        response_object['message'] = 'No Watershed Found'
         return jsonify(response_object)
-    else:
-        stmt = select(Watershed).where(Watershed.user_id == current_user.id)
-        watershedsUser = db.session.execute(stmt)
-        print(f"the user from db is: ------------> {watershedsUser}")
-
-        if watershedsUser is None:
-            response_object['message'] = 'No Watershed Found'
-            return jsonify(response_object)
-           
-        else:
-            for row in watershedsUser:
-                watershed = row.Watershed
-                # Convert the geom attribute to a Shapely geometry
-                shapely_geom = to_shape(watershed.w_boundary)
-                # Convert the Shapely geometry to GeoJSON
-                geojson_geom = json.dumps(mapping(shapely_geom))            
-                area = None
-                if isinstance(watershed.area, float):
-                    area = round(watershed.area, 2)
-
-                wsd.append({
-                    "id": watershed.id,
-                    "user_id": watershed.user_id,
-                    "name": watershed.name,
-                    "geojson": geojson_geom,
-                    "area": area,
-                    })
-            response_object['message'] = 'Watershed loaded successfully'
-            response_object['wsd'] = wsd
         
-            return jsonify(response_object)
+    else:
+        for row in watershedsUser:
+            watershed = row.Watershed
+            # Convert the geom attribute to a Shapely geometry
+            shapely_geom = to_shape(watershed.w_boundary)
+            # Convert the Shapely geometry to GeoJSON
+            geojson_geom = json.dumps(mapping(shapely_geom))            
+            area = None
+            if isinstance(watershed.area, float):
+                area = round(watershed.area, 2)
+
+            wsd.append({
+                "id": watershed.id,
+                "user_id": watershed.user_id,
+                "name": watershed.name,
+                "geojson": geojson_geom,
+                "area": area,
+                })
+        response_object['message'] = 'Watershed loaded successfully'
+        response_object['wsd'] = wsd
+        response_object['current_user'] = current_user
+    
+        return jsonify(response_object)
         
 
     # if request.method == 'POST' and request.form['status'] == 'loaded':

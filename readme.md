@@ -52,4 +52,6 @@ export default defineConfig({
         secure: false, // If the backend uses self-signed certificates, for example
         rewrite: (path) => path.replace(/^\/api/, ''), // Optional: Rewrite the API request path if necessary
       },
-    },)
+    },
+
+    

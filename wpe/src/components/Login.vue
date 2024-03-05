@@ -9,14 +9,14 @@
                 </div>
 
                 <div class="modal-body">
-                    <form @submit.prevent="submitForm" action="/login" method="POST" autocomplete="off">
+                    <form @submit.prevent="submitForm()" action="/login" method="POST" autocomplete="off">
                         <div class="mb-3">
                             <input v-model="userLogginIn.email" placeholder="E-Mail" type="email" class="form-control">
                         </div>
                         <div class="mb-3">
                             <input v-model="userLogginIn.password" placeholder="Password" type="password" class="form-control">
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary btn-sm">Submit</button>
+                        <button type="submit"  class="btn btn-outline-secondary btn-sm">Submit</button> <!--@click="loginUser(), toggleModal(), setStage()" -->
                     </form>
                 </div>
             </div>
@@ -85,14 +85,22 @@
                         }
                     })
                     .then(data => {
-                        console.log("Server response:", data);
-                        if (data.success === 'success' ) {
+                        console.log("Server response:", data)
+                        if (data.access_token) {
+                            localStorage.setItem('access_token', data.access_token);
                             alert(data.message);
-                            // this.closeModal();
-                            this.loginUser();
-                            this.toggleModal();
+                            this.loginUser()                      
                             this.setStage();
-                            console.log("Logged in user email from server:",data.mail);
+                            this.closeModal();
+                            
+                            
+                        // if (data.status === 'success' ) {
+                        //     // alert(data.message);
+                        //     this.loginUser()
+                            
+                        //     this.setStage();
+                        //     this.closeModal();
+                        //     console.log("Logged in user email from server:",data.mail);
                         } else {
                             alert(data.message);
                         }

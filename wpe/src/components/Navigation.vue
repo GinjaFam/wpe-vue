@@ -2,48 +2,52 @@
     <div v-if="isLoggedIn" class="btn-group" role="group" aria-label="Basic radio toggle button group">  
         <input
             v-model="selectedStage"
+            @click="controlsOff()"
 
             type="radio"
             value="watershed-stage" 
-            class="btn-check to-clean-map" 
+            class="btn-check"
             name="btnradio" 
             id="wsBtn" 
             autocomplete="off" 
             checked>
-        <label class="btn btn-outline-primary" for="wsBtn">Wathersheds</label>
+        <label class="btn btn-outline-primary btn-sm" for="wsBtn">Wathersheds</label>
 
         <input 
-            v-model="selectedStage"    
+            v-model="selectedStage"
+            @click="controlsOff()"    
 
             type="radio" 
             value="zone-stage"
-            class="btn-check to-clean-map" 
+            class="btn-check" 
             name="btnradio" 
             id="znBtn" 
             autocomplete="off">
-        <label class="btn btn-outline-primary" for="znBtn">Zones</label>
+        <label class="btn btn-outline-primary btn-sm" for="znBtn">Zones</label>
         
         <input  
             v-model="selectedStage"
+            @click="controlsOff()"
 
             type="radio"
             value="lulc-stage"
-            class="btn-check to-clean-map" 
+            class="btn-check" 
             name="btnradio" 
             id="lulcBtn" 
             autocomplete="off">
-        <label class="btn btn-outline-primary" for="lulcBtn">LULC</label>
+        <label class="btn btn-outline-primary btn-sm" for="lulcBtn">LULC</label>
 
         <input 
             v-model="selectedStage"
+            @click="controlsOff()"
 
             type="radio" 
             value="hru-stage"
-            class="btn-check to-clean-map" 
+            class="btn-check" 
             name="btnradio" 
             id="hruBtn" 
             autocomplete="off">
-        <label class="btn btn-outline-primary" for="hruBtn">HRUs</label>
+        <label class="btn btn-outline-primary btn-sm" for="hruBtn">HRUs</label>
     </div>
 
 </template>
@@ -66,6 +70,10 @@ import { drawStage } from '@/stores/stage';
             isLoggedIn() {
                 return userAuthStore().mailUser;
             },
+            drawCtrl() {
+                return drawStage().drawCtrl;
+                
+            }
         },
         watch: {
             // Watcher to react whenever the selected radio-button changes
@@ -75,7 +83,14 @@ import { drawStage } from '@/stores/stage';
             stageStore.registerStage(newStage);
             
             }
+        },
+        methods: {
+            controlsOff() {
+                drawStage().drawCtrl = false; 
+            },
+            
         }
+        
     };
 
 </script>

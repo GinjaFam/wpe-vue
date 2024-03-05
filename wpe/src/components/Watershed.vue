@@ -1,7 +1,7 @@
 <template>
     <div v-if="stageWs">
         <h4>Watersheds</h4>
-        <!-- <button @click="fetch">Fetch</button> -->
+        <button @click="fetchWithDelay()">Fetch</button>
         <button 
             @click="drawOn"
 
@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <!-- <tr>
                     <td>foo</td>
                     <td>foo</td>
                     <td>foo</td>
@@ -32,12 +32,12 @@
                     <td>boo</td>
                     <td>booo</td>
                     <td>boo</td>
-                </tr>
-                <!-- <tr v-for="ws in wsTable" :key="ws.id">
+                </tr> -->
+                <tr v-for="ws in wsTable" :key="ws.id">
                     <td>{{ ws.id }}</td>
                     <td>{{ ws.name }}</td>
                     <td>{{ ws.area }}</td>
-                </tr> -->
+                </tr>
             </tbody>
         </table>
     </div>
@@ -53,7 +53,7 @@ import { drawStage } from '@/stores/stage';
         name: 'Watershed',
         data() {
             return {
-                wsTable: null
+                wsTable: []
             };
         },
 
@@ -67,38 +67,52 @@ import { drawStage } from '@/stores/stage';
             }
         },
         
-        
+        // mounted() {
+        //     this.fetch();
+        //     console.log(localStorage.getItem('access_token'))
+        // },
         methods: {
             drawOn(){
                 drawStage().activateDrawCtrl();
             },
+            fetchWithDelay() {
+                setTimeout(this.fetch, 0); // Wait for 1 second before calling fetch
+            },
+            // Fetches data from the server
             fetch () {
+                const token = localStorage.getItem('access_token');
                 fetch('/api/ws_load', {
-                    method: 'get',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
+                        'Authorization': `Bearer ${token}`
+                    },
                 })
                 .then(response => { 
-                    if (response.ok) {
-                        if (response.headers.get("Content-Length") === "0") {
-                            throw new Error("Empty response from server");
-                        }
-                        return  response.json();
-                    } else {
-                        throw new Error("Server returned " + response.status + " : " + response.statusText);
+                    if (!response.ok) {
+                        // Throw an error with status text, which will be caught by the catch block
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
                     }
+                    return response.json(); // Parse JSON regardless of Content-Length
                 })
                 .then(data => {
+                    // Check if the data object is empty after parsing
+                    if (Object.keys(data).length === 0 && data.constructor === Object) {
+                        throw new Error("Empty response from server");
+                    }
+                    // Assign the fetched data to the wsTable property
                     this.wsTable = data;
+                    // Optional: Log the data for debugging
+                    console.log('Fetched data:', data);
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    // Log any errors that occur during the fetch operation
+                    console.error('Fetch Error:', error);
                 });
             }
-        },
-    };
+            }
+        }
+    
 
 </script>
 

@@ -6,6 +6,8 @@ import Auth from '../components/Auth.vue'
 import Navigation from '../components/Navigation.vue'
 import Register from '../components/Register.vue'
 import Login from '../components/Login.vue'
+import Explorer from '../components/Explorer.vue'
+import Watershed from '../components/Watershed.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,7 +46,19 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: Login  
+    },
+    {
+      path: '/explorer',
+      name: 'Explorer',
+      component: Explorer
+
+    },
+    {
+      path: '/watershed',
+      name: 'Watershed',
+      component: Watershed,
     }
+
       
 
   ]

@@ -11,23 +11,54 @@
     import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'; 
     import '../assets/L.switchBasemap.css'; // 
     import { extendLeafletBasemaps } from '../utils/switchBasemap.js'; // Ensure this path is correct
-  
+    
+    import { watch} from 'vue'; 
+    import { mapStore } from '@/stores/drawStore';
+    import { userAuthStore } from '@/stores/auth';
+    import {drawStage} from '@/stores/stage';
+    import { map } from 'leaflet';
+
+
+
     export default {
         name: 'MainMap',
-        mounted() {
-            extendLeafletBasemaps(); // Extend Leaflet with your custom control first
-            this.initializeMap();
+        data () { 
+            return {
+                // map: null,
+                watershedLayer: null,
+                zoneLayer: null,
+                lulcLayer: null,
+                hruLayer: null,
+                };
         },
+        computed: {
+            isDrawCtrl() {
+                return drawStore().drawCtrl;
+            },  
+        },
+        mounted() {
+            const userAuth = userAuthStore();
+            extendLeafletBasemaps(); // Extend Leaflet with custom control before initializing the map
+            
+            this.initializeMap();
+            this.controls();
+            this.watchDrawControl();
+            
+
+            // this.userAuthWatch();
+        },
+
+        
+       
         methods: {
             initializeMap() {
                 // Create the map
-                const map = L.map('map').fitBounds([
+                this.map = L.map('map').fitBounds([
                     [11.69364, 0.16169675], // southWest [lat, lng]
                     [23.500196, 15.999085]  // northEast [lat, lng]
                 ]);
-        
-                
-        
+                console.log('basemapSwitcher',L.basemapsSwitcher);
+
                 // Define basemap layers for the switcher
                 const basemapLayers = [
                 {
@@ -41,26 +72,53 @@
                     name: 'USGS'
                 },
                 {
-                    layer: L.tileLayer.provider('Esri.WorldImagery').addTo(map),
+                    layer: L.tileLayer.provider('Esri.WorldImagery').addTo(this.map),
                     icon: '/assets/static/images/img3.PNG',
                     name: 'ESRI satellite'
                 }
                 ];
         
                 // Add the basemap switcher to the map
-                L.basemapsSwitcher(basemapLayers, { position: 'topleft' }).addTo(map);
+                L.basemapsSwitcher(basemapLayers, { position: 'topleft' }).addTo(this.map);
         
-                // Add Geoman.io controls
-                map.pm.addControls({  
-                position: 'topleft',  
-                drawCircleMarker: false,
-                rotateMode: false,
-                drawCircle: false,
-                drawRectangle: false,
-                drawMarker: false,
-                drawText: false
-                }); 
-            }
+            },
+            controls(enable) {
+                if (enable === true) {
+                    // Add Geoman.io controls
+                    this.map.pm.addControls({  
+                        position: 'topleft',  
+                        drawCircleMarker: false,
+                        rotateMode: false,
+                        drawCircle: false,
+                        drawRectangle: false,
+                        drawMarker: false,
+                        drawText: false
+                    });
+                } else {
+                    // Remove Geoman.io controls
+                    this.map.pm.removeControls();
+                }; 
+            },
+            watchDrawControl() {
+                const drawSt = drawStage(); 
+                // Watch for changes in drawCtrl and update controls accordingly
+                watch(() => drawSt.drawCtrl, (newVal) => {
+                    this.controls(newVal);
+                });
+            },
+
+            setWsLayer() {
+                this.watershedLayer = L.geoJSON(mapStore().loadedWatershed, {
+                    style: {
+                        color: 'blue',
+                        weight: 2,
+                        opacity: 1
+                    }
+                }).addTo(this.map);
+                console.log('watershedLayer',this.watershedLayer);
+            },
+            
+            
         }
     };
   </script>
