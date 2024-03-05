@@ -5,7 +5,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Login</h5>
-                    <button type="button" @click="toggleModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Login</button>
+                    <button type="button" @click="toggleModal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Login</button>
                 </div>
 
                 <div class="modal-body">
@@ -16,7 +16,7 @@
                         <div class="mb-3">
                             <input v-model="userLogginIn.password" placeholder="Password" type="password" class="form-control">
                         </div>
-                        <button type="submit" @click="loginUser(), toggleModal()" class="btn btn-outline-secondary btn-sm">Submit</button>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Submit</button>
                     </form>
                 </div>
             </div>
@@ -26,16 +26,12 @@
 
 <script>
     import { userAuthStore } from '@/stores/auth';
+    import { drawStage} from '@/stores/stage';
     import { defineComponent } from 'vue';
 
     export default defineComponent({    
         name: 'Login',
-        computed: {
-            // Expose the store and its state as a computed property - then i can use it in the DOM
-            mailUser() {
-                return userAuthStore().mailUser;
-            }
-        },
+        
         data() {
             return {
                 showModal: false, // Ensure this is defined
@@ -46,16 +42,27 @@
             };
         },
 
+        computed: {
+            // Expose the store and its state as a computed property - then i can use it in the DOM
+            mailUser() {
+                return userAuthStore().mailUser;
+            }
+        },
+
         methods: {
+            // turn the modal data on or off
             toggleModal() {
                 this.showModal = !this.showModal;
             },
+            
             submitForm() { 
+                //if form fields are empty, alert user
                 if (this.userLogginIn.email === '' || this.userLogginIn.password === '') {
                     alert('Please fill in all fields');
                     return;
                 }
-                else if (this.mailUser === this.userLogginIn.email) {
+                // if user is already logged in, alert user
+                if (this.mailUser === this.userLogginIn.email) {
                     alert('You are already logged in - If you want to switch account first log out!');
                     return;
                 } else {
@@ -81,7 +88,10 @@
                         console.log("Server response:", data);
                         if (data.success === 'success' ) {
                             alert(data.message);
-                            this.closeModal();
+                            // this.closeModal();
+                            this.loginUser();
+                            this.toggleModal();
+                            this.setStage();
                             console.log("Logged in user email from server:",data.mail);
                         } else {
                             alert(data.message);
@@ -93,6 +103,8 @@
                     });
                 }
             },
+            
+
             loginUser() {
                 const email = this.userLogginIn.email;
                 const authStore = userAuthStore();
@@ -106,6 +118,10 @@
                 this.showModal = false;
                 this.initForm();
             },
+            setStage() {
+                const stageStore  = drawStage();
+                stageStore.registerStage('watershed-stage');
+            }
         }, 
     });
 
