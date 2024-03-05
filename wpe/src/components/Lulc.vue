@@ -3,6 +3,13 @@
         <h4>
             LULC
         </h4>
+        <button 
+            @click="drawOn"
+
+            class="btn btn-outline-secondary btn-sm" 
+            id="lulcDrawBtn">
+            Draw
+        </button>
     </div>
 </template>
 
@@ -19,6 +26,11 @@ export default {
                 return false;
             }
         }
+    },
+    methods: {
+        drawOn(){
+            drawStage().activateDrawCtrl();
+        },
     }
 }
 

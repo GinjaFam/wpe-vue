@@ -3,6 +3,12 @@
         <h4>
             Landscape Zones
         </h4>
+        <button 
+            @click="drawOn"
+            class="btn btn-outline-secondary btn-sm" 
+            id="znDrawBtn">
+            Draw
+        </button>
     </div>
 </template>
 
@@ -19,6 +25,11 @@ export default {
                 return false;
             }
         }
+    },
+    methods: {
+        drawOn(){
+            drawStage().activateDrawCtrl();
+        },
     }
 }
 

@@ -1,8 +1,15 @@
 <template>
-    <div>
-        <h1>Watersheds</h1>
-        <button @click="fetch">Fetch</button>
-        <table>
+    <div v-if="stageWs">
+        <h4>Watersheds</h4>
+        <!-- <button @click="fetch">Fetch</button> -->
+        <button 
+            @click="drawOn"
+
+            class="btn btn-outline-secondary btn-sm" 
+            id="wsDrawBtn">
+            Draw
+        </button>
+        <table class="table table-sm table-hover table-striped">
             <thead>
                 <tr>
                     <th>Watershed ID</th>
@@ -11,11 +18,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="ws in wsTable" :key="ws.id">
+                <tr>
+                    <td>foo</td>
+                    <td>foo</td>
+                    <td>foo</td>
+                </tr>
+                <tr>
+                    <td>buz</td>
+                    <td>bux</td>
+                    <td>buz</td>
+                </tr>
+                <tr>
+                    <td>boo</td>
+                    <td>booo</td>
+                    <td>boo</td>
+                </tr>
+                <!-- <tr v-for="ws in wsTable" :key="ws.id">
                     <td>{{ ws.id }}</td>
                     <td>{{ ws.name }}</td>
                     <td>{{ ws.area }}</td>
-                </tr>
+                </tr> -->
             </tbody>
         </table>
     </div>
@@ -34,9 +56,24 @@ import { drawStage } from '@/stores/stage';
                 wsTable: null
             };
         },
+
+        computed: {
+            stageWs(){
+                if (drawStage().stageVar === "watershed-stage") {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+        
+        
         methods: {
+            drawOn(){
+                drawStage().activateDrawCtrl();
+            },
             fetch () {
-                fetch('/api/watershed', {
+                fetch('/api/ws_load', {
                     method: 'get',
                     headers: {
                         'Content-Type': 'application/json',
@@ -64,3 +101,7 @@ import { drawStage } from '@/stores/stage';
     };
 
 </script>
+
+<style>
+
+</style>
